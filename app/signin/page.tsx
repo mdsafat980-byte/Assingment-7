@@ -61,7 +61,7 @@ function SignInForm() {
 
   return (
     <section className="auth-card">
-      <div className="auth-brand"><Image src="/bazar-dor-logo.svg" width={43} height={43} alt="" /></div>
+      <div className="auth-brand"><Image src="/bazar-dor-logo.png" width={43} height={43} alt="" /></div>
       <h1>আবার স্বাগতম</h1><p className="auth-description">আপনার বাজারদর অ্যাকাউন্টে সাইন ইন করুন।</p>
       <form onSubmit={submit}>
         <label className="form-field">ইমেইল<input type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="আপনার ইমেইল" /></label>

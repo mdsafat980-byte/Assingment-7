@@ -63,7 +63,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="container header-main">
         <Link className="brand" href="/" aria-label="বাজার দর হোম পেজ">
-          <Image src="/bazar-dor-logo.svg" width={48} height={48} alt="" priority />
+          <Image src="/bazar-dor-logo.png" width={48} height={48} alt="" priority />
           <span className="brand-copy">
             <span className="brand-title">বাজার দর</span>
             <span className="brand-date">{banglaDate}</span>
