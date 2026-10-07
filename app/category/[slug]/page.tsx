@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -77,11 +78,14 @@ export default function CategoryPage() {
               <div className="product-toolbar">
                 <span className="section-kicker">মোট {products.length}টি পণ্য</span>
                 <label className="sort-control">সাজান:
-                  <select value={sort} onChange={(event) => setSort(event.target.value as SortOrder)} aria-label="পণ্যের দাম অনুযায়ী সাজান">
-                    <option value="default">ডিফল্ট</option>
-                    <option value="asc">দাম: কম থেকে বেশি</option>
-                    <option value="desc">দাম: বেশি থেকে কম</option>
-                  </select>
+                  <span className="sort-select-wrap">
+                    <select value={sort} onChange={(event) => setSort(event.target.value as SortOrder)} aria-label="পণ্যের দাম অনুযায়ী সাজান">
+                      <option value="default">ডিফল্ট</option>
+                      <option value="asc">দাম: কম থেকে বেশি</option>
+                      <option value="desc">দাম: বেশি থেকে কম</option>
+                    </select>
+                    <ChevronDown className="sort-chevron" size={16} aria-hidden="true" />
+                  </span>
                 </label>
               </div>
               <ProductGrid products={sortedProducts} />
