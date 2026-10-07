@@ -49,18 +49,22 @@ export function SiteHeader() {
     router.refresh();
   }
 
-  const banglaDate = new Intl.DateTimeFormat("bn-BD", {
+  const dateParts = new Intl.DateTimeFormat("bn-BD", {
     weekday: "long",
     day: "numeric",
     month: "long",
-  }).format(new Date());
+    year: "numeric",
+  }).formatToParts(new Date());
+  const getDatePart = (type: Intl.DateTimeFormatPartTypes) =>
+    dateParts.find((part) => part.type === type)?.value ?? "";
+  const banglaDate = `${getDatePart("weekday")}, ${getDatePart("day")} ${getDatePart("month")} ${getDatePart("year")}`;
 
   return (
     <header className="site-header">
       <div className="container header-main">
         <Link className="brand" href="/" aria-label="বাজার দর হোম পেজ">
-          <Image src="/logo-icon.png" width={44} height={44} alt="" priority />
-          <span>
+          <Image src="/bazar-dor-logo.svg" width={48} height={48} alt="" priority />
+          <span className="brand-copy">
             <span className="brand-title">বাজার দর</span>
             <span className="brand-date">{banglaDate}</span>
           </span>

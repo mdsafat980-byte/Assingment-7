@@ -44,7 +44,7 @@ export default function SignUpPage() {
 
   return <><main className="auth-shell">
     <section className="auth-card">
-      <div className="auth-brand"><Image src="/logo-icon.png" width={43} height={43} alt="" /></div>
+      <div className="auth-brand"><Image src="/bazar-dor-logo.svg" width={43} height={43} alt="" /></div>
       <h1>নতুন অ্যাকাউন্ট</h1><p className="auth-description">বাজারদরের হালনাগাদ তথ্য পেতে যোগ দিন।</p>
       <form onSubmit={submit}>
         <label className="form-field">নাম<input type="text" autoComplete="name" required maxLength={80} value={name} onChange={(event) => setName(event.target.value)} placeholder="আপনার নাম" /></label>

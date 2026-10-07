@@ -23,9 +23,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .site-header { background: #fff; border-bottom: 1px solid var(--line); }
 .header-main { min-height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 205px; }
-.brand img { width: 42px; height: 42px; object-fit: contain; }
+.brand img { width: 48px; height: 48px; flex: 0 0 auto; object-fit: contain; }
+.brand-copy { display: flex; flex-direction: column; }
 .brand-title { font-size: 23px; font-weight: 800; letter-spacing: -.7px; }
-.brand-date { color: var(--muted); font-size: 12px; margin-top: 1px; }
+.brand-date { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
 .auth-nav { display: flex; align-items: center; gap: 12px; }
 .button { min-height: 42px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; border: 1px solid transparent; border-radius: 9px; padding: 0 17px; font-weight: 700; cursor: pointer; transition: .18s ease; }
 .button:hover { transform: translateY(-1px); }
@@ -161,7 +162,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .container { width: calc(100% - 30px); }
   .header-main { min-height: 72px; gap: 8px; }
   .brand { min-width: unset; gap: 8px; }
-  .brand img { width: 35px; height: 35px; }
+  .brand img { width: 42px; height: 42px; }
   .brand-title { font-size: 18px; }
   .brand-date { font-size: 10px; }
   .auth-nav { gap: 3px; }
