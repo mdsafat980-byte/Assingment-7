@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { AuthSkeleton } from "@/components/auth-skeleton";
 import { SiteFooter } from "@/components/site-footer";
 import { type SocialProvider, useSocialProviders } from "@/components/use-social-providers";
-import { authClient } from "@/lib/auth-client";
+import { authClient, SOCIAL_AUTH_PENDING_KEY } from "@/lib/auth-client";
 
 function safeCallbackURL(value: string | null) {
   if (!value) return "/";
@@ -91,12 +91,20 @@ function SignInForm() {
     }
     setBusy(provider);
     try {
+      window.sessionStorage.setItem(
+        SOCIAL_AUTH_PENDING_KEY,
+        JSON.stringify({ flow: "signin", startedAt: Date.now() }),
+      );
       const result = await authClient.signIn.social({
         provider,
         callbackURL: withAuthResult(callbackURL),
       });
-      if (result.error) toast.error(result.error.message ?? `${provider} দিয়ে সাইন ইন করা যায়নি`);
+      if (result.error) {
+        window.sessionStorage.removeItem(SOCIAL_AUTH_PENDING_KEY);
+        toast.error(result.error.message ?? `${provider} দিয়ে সাইন ইন করা যায়নি`);
+      }
     } catch (error) {
+      window.sessionStorage.removeItem(SOCIAL_AUTH_PENDING_KEY);
       toast.error(error instanceof Error ? error.message : `${provider} দিয়ে সাইন ইন করা যায়নি`);
     } finally {
       setBusy(null);

@@ -7,7 +7,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { SiteFooter } from "@/components/site-footer";
 import { type SocialProvider, useSocialProviders } from "@/components/use-social-providers";
-import { authClient } from "@/lib/auth-client";
+import { authClient, SOCIAL_AUTH_PENDING_KEY } from "@/lib/auth-client";
 
 function SocialButtonIcon({ provider }: { provider: SocialProvider }) {
   if (provider === "google") {
@@ -67,12 +67,20 @@ export default function SignUpPage() {
     }
     setBusy(provider);
     try {
+      window.sessionStorage.setItem(
+        SOCIAL_AUTH_PENDING_KEY,
+        JSON.stringify({ flow: "signup", startedAt: Date.now() }),
+      );
       const result = await authClient.signIn.social({
         provider,
         callbackURL: "/?auth=signup",
       });
-      if (result.error) toast.error(result.error.message ?? `${provider} দিয়ে নিবন্ধন করা যায়নি`);
+      if (result.error) {
+        window.sessionStorage.removeItem(SOCIAL_AUTH_PENDING_KEY);
+        toast.error(result.error.message ?? `${provider} দিয়ে নিবন্ধন করা যায়নি`);
+      }
     } catch (error) {
+      window.sessionStorage.removeItem(SOCIAL_AUTH_PENDING_KEY);
       toast.error(error instanceof Error ? error.message : `${provider} দিয়ে নিবন্ধন করা যায়নি`);
     } finally {
       setBusy(null);
