@@ -4,7 +4,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ProductLoading } from "@/components/product-loading";
-import { MARKET_API, type Product, priceLabel, unitLabel } from "@/lib/market";
+import {
+  MARKET_API,
+  type Product,
+  getChangeLabel,
+  priceLabel,
+  unitLabel,
+} from "@/lib/market";
 
 export function ProductDetail({ slug }: { slug: string }) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -84,45 +90,76 @@ export function ProductDetail({ slug }: { slug: string }) {
             </Link>{" "}
             / {product.nameBn}
           </div>
-          <div className="detail-intro">
-            <div className="detail-emoji">{product.image}</div>
-            <div>
-              <h1>{product.nameBn}</h1>
-              <p>
-                {product.nameBn} — বাংলাদেশের বিভিন্ন বাজারে আজকের সম্ভাব্য দর ও
-                দামের পরিবর্তন।
-              </p>
-              <div className="tag-list">
-                <Link className="tag" href={`/category/${product.category}`}>
-                  {product.categoryIcon} {product.categoryNameBn}
-                </Link>
-                <span className="tag">{unitLabel(product.unit)}</span>
+          <section className="detail-hero">
+            <div className="detail-intro">
+              <div className="detail-emoji">{product.image}</div>
+              <div>
+                <h1>{product.nameBn}</h1>
+                <p>
+                  {product.description ??
+                    `${product.nameBn} — বাংলাদেশের বিভিন্ন বাজারে আজকের সম্ভাব্য দর ও দামের পরিবর্তন।`}
+                </p>
+                <div className="tag-list">
+                  <Link className="tag" href={`/category/${product.category}`}>
+                    {product.categoryIcon} {product.categoryNameBn}
+                  </Link>
+                  <span className="tag">{unitLabel(product.unit)}</span>
+                </div>
               </div>
             </div>
-          </div>
+            <div className="today-price-card">
+              <span>আজকের দাম</span>
+              <strong>{priceLabel(product.today)}</strong>
+              <span className={`change-badge ${product.change.dir}`}>
+                {getChangeLabel(product.change)}
+              </span>
+            </div>
+          </section>
+          <section className="summary-section">
+            <h2>দামের সারাংশ</h2>
+            <div className="summary-grid">
+              <div className="summary-card">
+                <span>সর্বনিম্ন দাম</span>
+                <strong>{priceLabel(minimum)}</strong>
+                <small>{unitLabel(product.unit)} হিসেবে</small>
+              </div>
+              <div className="summary-card">
+                <span>সর্বোচ্চ দাম</span>
+                <strong>{priceLabel(maximum)}</strong>
+                <small>{unitLabel(product.unit)} হিসেবে</small>
+              </div>
+              <div className="summary-card">
+                <span>গড় দাম</span>
+                <strong>{priceLabel(Math.round(average))}</strong>
+                <small>{unitLabel(product.unit)} হিসেবে</small>
+              </div>
+            </div>
+          </section>
           <section className="market-table-wrap">
             <h2>বাজারভিত্তিক আজকের দাম</h2>
             {marketPrices.length ? (
-              <table className="market-table">
-                <thead>
-                  <tr>
-                    <th>বাজার</th>
-                    <th>বিভাগ</th>
-                    <th>সর্বনিম্ন</th>
-                    <th>সর্বোচ্চ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {marketPrices.map((market) => (
-                    <tr key={`${market.market}-${market.division}`}>
-                      <td>{market.market}</td>
-                      <td>{market.division}</td>
-                      <td>{priceLabel(market.min)}</td>
-                      <td>{priceLabel(market.max)}</td>
+              <div className="market-table-scroll">
+                <table className="market-table">
+                  <thead>
+                    <tr>
+                      <th>বাজার</th>
+                      <th>বিভাগ</th>
+                      <th>সর্বনিম্ন</th>
+                      <th>সর্বোচ্চ</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {marketPrices.map((market) => (
+                      <tr key={`${market.market}-${market.division}`}>
+                        <td>{market.market}</td>
+                        <td>{market.division}</td>
+                        <td>{priceLabel(market.min)}</td>
+                        <td>{priceLabel(market.max)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
               <div className="empty-box">
                 এই পণ্যের বাজারভিত্তিক তথ্য এখন পাওয়া যাচ্ছে না।
@@ -130,25 +167,6 @@ export function ProductDetail({ slug }: { slug: string }) {
             )}
           </section>
         </div>
-        <aside className="summary-panel">
-          <h2>দামের সারাংশ</h2>
-          <div className="summary-price">
-            <span>সর্বনিম্ন দাম</span>
-            <strong>{priceLabel(minimum)}</strong>
-          </div>
-          <div className="summary-price">
-            <span>সর্বোচ্চ দাম</span>
-            <strong>{priceLabel(maximum)}</strong>
-          </div>
-          <div className="summary-price">
-            <span>গড় দাম</span>
-            <strong>{priceLabel(Math.round(average))}</strong>
-          </div>
-          <div className="summary-price">
-            <span>একক</span>
-            <strong>{unitLabel(product.unit)}</strong>
-          </div>
-        </aside>
       </div>
     </main>
   );

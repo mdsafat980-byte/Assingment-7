@@ -104,20 +104,34 @@ export function SiteHeader() {
           {isPending ? (
             <span className="brand-date">লোড হচ্ছে…</span>
           ) : session ? (
-            <>
-              <Link className="button button-text" href="/profile">
-                আমার প্রোফাইল
-              </Link>
-              <button
-                className="button button-light"
-                type="button"
-                disabled={signingOut}
-                onClick={handleSignOut}
+            <details className="account-menu">
+              <summary
+                className="account-menu-trigger"
+                aria-label={`${session.user.name || "আমার প্রোফাইল"} মেনু`}
               >
-                {signingOut && <span className="auth-spinner" aria-hidden="true" />}
-                {signingOut ? "সাইন আউট হচ্ছে…" : "সাইন আউট"}
-              </button>
-            </>
+                <span className="account-avatar" aria-hidden="true">
+                  {session.user.name?.trim().charAt(0).toUpperCase() || "?"}
+                </span>
+                <span className="account-name">
+                  {session.user.name || "আমার প্রোফাইল"}
+                </span>
+                <span className="account-chevron" aria-hidden="true">⌄</span>
+              </summary>
+              <div className="account-menu-panel">
+                <Link className="account-menu-item" href="/profile">
+                  আমার প্রোফাইল
+                </Link>
+                <button
+                  className="account-menu-item"
+                  type="button"
+                  disabled={signingOut}
+                  onClick={handleSignOut}
+                >
+                  {signingOut && <span className="auth-spinner" aria-hidden="true" />}
+                  {signingOut ? "সাইন আউট হচ্ছে…" : "সাইন আউট"}
+                </button>
+              </div>
+            </details>
           ) : (
             <>
               <Link className="button button-text" href="/signin">
