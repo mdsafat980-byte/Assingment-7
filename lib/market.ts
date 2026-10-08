@@ -1,5 +1,35 @@
 export const MARKET_API = "/api/market";
 
+const MARKET_CACHE_TTL = 60_000;
+const marketRequests = new Map<
+  string,
+  { expiresAt: number; promise: Promise<unknown> }
+>();
+
+export function fetchMarketData<T>(path: string, errorMessage: string): Promise<T> {
+  const url = `${MARKET_API}${path}`;
+  const cached = marketRequests.get(url);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.promise as Promise<T>;
+  }
+
+  const request = fetch(url)
+    .then(async (response) => {
+      if (!response.ok) throw new Error(errorMessage);
+      return response.json() as Promise<T>;
+    })
+    .catch((error: unknown) => {
+      if (marketRequests.get(url)?.promise === request) marketRequests.delete(url);
+      throw error;
+    });
+
+  marketRequests.set(url, {
+    expiresAt: Date.now() + MARKET_CACHE_TTL,
+    promise: request,
+  });
+  return request;
+}
+
 export type PriceChange = {
   dir: "up" | "down" | "flat";
   pct: number;

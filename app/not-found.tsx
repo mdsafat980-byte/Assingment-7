@@ -1,11 +1,8 @@
 import Link from "next/link";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 
 export default function NotFound() {
   return (
     <>
-      <SiteHeader />
       <main className="not-found">
         <div>
           <h1>৪০৪</h1>
@@ -16,7 +13,6 @@ export default function NotFound() {
           </Link>
         </div>
       </main>
-      <SiteFooter />
     </>
   );
 }

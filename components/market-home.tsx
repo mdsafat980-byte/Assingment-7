@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductLoading } from "@/components/product-loading";
 import {
-  MARKET_API,
+  fetchMarketData,
   type Product,
   getChangeLabel,
   priceLabel,
@@ -24,9 +24,7 @@ export function MarketHome() {
     setLoading(true);
     setLoadError(false);
     try {
-      const response = await fetch(`${MARKET_API}/products`);
-      if (!response.ok) throw new Error("বাজারের পণ্য লোড করা যায়নি");
-      setProducts((await response.json()) as Product[]);
+      setProducts(await fetchMarketData<Product[]>("/products", "বাজারের পণ্য লোড করা যায়নি"));
     } catch (error) {
       setLoadError(true);
       toast.error(

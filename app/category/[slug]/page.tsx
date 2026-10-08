@@ -7,9 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductLoading } from "@/components/product-loading";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { MARKET_API, type Category, type Product } from "@/lib/market";
+import { fetchMarketData, type Category, type Product } from "@/lib/market";
 
 type SortOrder = "default" | "asc" | "desc";
 
@@ -27,13 +25,13 @@ export default function CategoryPage() {
       setLoading(true);
       setError(false);
       try {
-        const [categoryResponse, productResponse] = await Promise.all([
-          fetch(`${MARKET_API}/categories`),
-          fetch(`${MARKET_API}/products?category=${encodeURIComponent(slug)}`),
+        const [categories, items] = await Promise.all([
+          fetchMarketData<Category[]>("/categories", "ক্যাটাগরির তথ্য লোড করা যায়নি"),
+          fetchMarketData<Product[]>(
+            `/products?category=${encodeURIComponent(slug)}`,
+            "ক্যাটাগরির তথ্য লোড করা যায়নি",
+          ),
         ]);
-        if (!categoryResponse.ok || !productResponse.ok) throw new Error("ক্যাটাগরির তথ্য লোড করা যায়নি");
-        const categories = await categoryResponse.json() as Category[];
-        const items = await productResponse.json() as Product[];
         const selectedCategory = categories.find((item) => item.slug === slug);
         if (active) {
           setCategory(selectedCategory ?? null);
@@ -61,7 +59,6 @@ export default function CategoryPage() {
 
   return (
     <>
-      <SiteHeader />
       <main>
         <div className="page-heading">
           <div className="container">
@@ -93,7 +90,6 @@ export default function CategoryPage() {
           )}
         </div>
       </main>
-      <SiteFooter />
     </>
   );
 }

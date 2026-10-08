@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ProductLoading } from "@/components/product-loading";
 import {
-  MARKET_API,
+  fetchMarketData,
   type Product,
   getChangeLabel,
   priceLabel,
@@ -19,10 +19,8 @@ export function ProductDetail({ slug }: { slug: string }) {
 
   useEffect(() => {
     let active = true;
-    fetch(`${MARKET_API}/products`)
-      .then(async (response) => {
-        if (!response.ok) throw new Error("পণ্যের তথ্য লোড করা যায়নি");
-        const items = (await response.json()) as Product[];
+    fetchMarketData<Product[]>("/products", "পণ্যের তথ্য লোড করা যায়নি")
+      .then((items) => {
         const item = items.find((entry) => entry.slug === slug);
         if (!item) throw new Error("পণ্য খুঁজে পাওয়া যায়নি");
         if (active) setProduct(item);

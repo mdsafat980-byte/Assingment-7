@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { SiteFooter } from "@/components/site-footer";
 import { type SocialProvider, useSocialProviders } from "@/components/use-social-providers";
 import { authClient, SOCIAL_AUTH_PENDING_KEY } from "@/lib/auth-client";
 
@@ -120,5 +119,5 @@ export default function SignUpPage() {
       {socialProviders && (!socialProviders.google || !socialProviders.github) && <p className="social-help">যে সামাজিক লগইনটি চালু নেই, তার OAuth Client ID ও Client Secret সেট করতে হবে।</p>}
       <p className="auth-switch">আগেই অ্যাকাউন্ট আছে? <Link href="/signin">সাইন ইন করুন</Link></p>
     </section>
-  </main><SiteFooter /></>;
+  </main> </>;
 }

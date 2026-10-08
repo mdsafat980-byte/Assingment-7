@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AuthSkeleton } from "@/components/auth-skeleton";
-import { SiteFooter } from "@/components/site-footer";
 import { type SocialProvider, useSocialProviders } from "@/components/use-social-providers";
 import { authClient, SOCIAL_AUTH_PENDING_KEY } from "@/lib/auth-client";
 
@@ -147,5 +146,5 @@ function SignInForm() {
 }
 
 export default function SignInPage() {
-  return <><main className="auth-shell"><Suspense fallback={<AuthSkeleton />}><SignInForm /></Suspense></main><SiteFooter /></>;
+  return <><main className="auth-shell"><Suspense fallback={<AuthSkeleton />}><SignInForm /></Suspense></main> </>;
 }

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import {
-  MARKET_API,
+  fetchMarketData,
   type Category,
   type Product,
   bnNumber,
@@ -16,25 +16,29 @@ import {
   unitLabel,
 } from "@/lib/market";
 
-export function SiteHeader() {
+export function SiteHeader({
+  categories: initialCategories,
+  tickerProducts: initialTickerProducts,
+}: {
+  /** Supplied by the server layout; the client only fetches when absent. */
+  categories?: Category[];
+  tickerProducts?: Product[];
+} = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [tickerProducts, setTickerProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
+  const [tickerProducts, setTickerProducts] = useState<Product[]>(initialTickerProducts ?? []);
   const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
+    // Server data already covers the navigation — nothing to fetch.
+    if (initialCategories && initialCategories.length > 0) return;
+
     let active = true;
     Promise.all([
-      fetch(`${MARKET_API}/categories`).then((response) => {
-        if (!response.ok) throw new Error("ক্যাটাগরি লোড করা যায়নি");
-        return response.json() as Promise<Category[]>;
-      }),
-      fetch(`${MARKET_API}/products`).then((response) => {
-        if (!response.ok) throw new Error("দাম লোড করা যায়নি");
-        return response.json() as Promise<Product[]>;
-      }),
+      fetchMarketData<Category[]>("/categories", "ক্যাটাগরি লোড করা যায়নি"),
+      fetchMarketData<Product[]>("/products", "দাম লোড করা যায়নি"),
     ])
       .then(([categoryData, products]) => {
         if (!active) return;
@@ -52,7 +56,7 @@ export function SiteHeader() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [initialCategories, initialTickerProducts]);
 
   async function handleSignOut() {
     setSigningOut(true);
