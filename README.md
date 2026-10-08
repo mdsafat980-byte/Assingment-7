@@ -42,6 +42,14 @@ Copy `.env.example` to `.env.local` and set:
 
 Local development uses SQLite when `DATABASE_URL` is unset. With a Neon connection string present, the app uses Postgres; run `npm run auth:migrate -- --yes` to create BetterAuth’s tables before starting the app.
 
+## Authentication
+
+- `/signup` creates an email/password account and sends the user to `/signin`; email verification is disabled for the assignment flow.
+- `/signin` starts a session and returns the user to the requested page. Invalid credentials, validation errors, signup, logout, and protected-route redirects show toast notifications.
+- Google/GitHub buttons become available after provider configuration is checked. To enable a provider, set both of its client ID and secret. Register these callback URLs with Google/GitHub:
+  - Local: `http://localhost:3000/api/auth/callback/google` and `http://localhost:3000/api/auth/callback/github`
+  - Production: `https://<your-domain>/api/auth/callback/google` and `https://<your-domain>/api/auth/callback/github`
+
 ## Deploying to Vercel
 
 1. Create a Neon Postgres database and copy its pooled connection string into `DATABASE_URL`.

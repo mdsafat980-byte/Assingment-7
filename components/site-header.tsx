@@ -6,7 +6,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
-import { MARKET_API, type Category, type Product, bnNumber, getChangeLabel, priceLabel, unitLabel } from "@/lib/market";
+import {
+  MARKET_API,
+  type Category,
+  type Product,
+  bnNumber,
+  getChangeLabel,
+  priceLabel,
+  unitLabel,
+} from "@/lib/market";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -14,6 +22,7 @@ export function SiteHeader() {
   const { data: session, isPending } = authClient.useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [tickerProducts, setTickerProducts] = useState<Product[]>([]);
+  const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -33,20 +42,34 @@ export function SiteHeader() {
         setTickerProducts(products);
       })
       .catch((error: unknown) => {
-        if (active) toast.error(error instanceof Error ? error.message : "বাজারের তথ্য লোড করা যায়নি");
+        if (active)
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "বাজারের তথ্য লোড করা যায়নি",
+          );
       });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   async function handleSignOut() {
-    const result = await authClient.signOut();
-    if (result.error) {
-      toast.error(result.error.message ?? "সাইন আউট করা যায়নি");
-      return;
+    setSigningOut(true);
+    try {
+      const result = await authClient.signOut();
+      if (result.error) {
+        toast.error(result.error.message ?? "সাইন আউট করা যায়নি");
+        return;
+      }
+      toast.success("সফলভাবে সাইন আউট হয়েছে");
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "সাইন আউট করা যায়নি");
+    } finally {
+      setSigningOut(false);
     }
-    toast.success("সফলভাবে সাইন আউট হয়েছে");
-    router.push("/");
-    router.refresh();
   }
 
   const dateParts = new Intl.DateTimeFormat("bn-BD", {
@@ -63,7 +86,15 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="container header-main">
         <Link className="brand" href="/" aria-label="বাজার দর হোম পেজ">
-          <Image src="/bazar-dor-logo.png" width={48} height={48} alt="" priority />
+          <span className="brand-icon">
+            <Image
+              src="/logo-icon.png"
+              width={34}
+              height={34}
+              alt=""
+              priority
+            />
+          </span>
           <span className="brand-copy">
             <span className="brand-title">বাজার দর</span>
             <span className="brand-date">{banglaDate}</span>
@@ -74,19 +105,38 @@ export function SiteHeader() {
             <span className="brand-date">লোড হচ্ছে…</span>
           ) : session ? (
             <>
-              <Link className="button button-text" href="/profile">আমার প্রোফাইল</Link>
-              <button className="button button-light" type="button" onClick={handleSignOut}>সাইন আউট</button>
+              <Link className="button button-text" href="/profile">
+                আমার প্রোফাইল
+              </Link>
+              <button
+                className="button button-light"
+                type="button"
+                disabled={signingOut}
+                onClick={handleSignOut}
+              >
+                {signingOut && <span className="auth-spinner" aria-hidden="true" />}
+                {signingOut ? "সাইন আউট হচ্ছে…" : "সাইন আউট"}
+              </button>
             </>
           ) : (
             <>
-              <Link className="button button-text" href="/signin">সাইন ইন</Link>
-              <Link className="button button-primary" href="/signup">সাইন আপ</Link>
+              <Link className="button button-text" href="/signin">
+                সাইন ইন
+              </Link>
+              <Link className="button button-primary" href="/signup">
+                সাইন আপ
+              </Link>
             </>
           )}
         </div>
       </div>
       <nav className="container category-nav" aria-label="পণ্যের ক্যাটাগরি">
-        <Link className={`category-link ${pathname === "/" ? "active" : ""}`} href="/">সব পণ্য</Link>
+        <Link
+          className={`category-link ${pathname === "/" ? "active" : ""}`}
+          href="/"
+        >
+          সব পণ্য
+        </Link>
         {categories.map((category) => (
           <Link
             className={`category-link ${pathname === `/category/${category.slug}` ? "active" : ""}`}
@@ -102,8 +152,13 @@ export function SiteHeader() {
           <div className="ticker-track">
             {[...tickerProducts, ...tickerProducts].map((product, index) => (
               <span className="ticker-item" key={`${product.id}-${index}`}>
-                {product.image} {product.nameBn}<strong>{priceLabel(product.today)} / {unitLabel(product.unit)}</strong>
-                <span className={product.change.dir}>{getChangeLabel(product.change)}</span>
+                {product.image} {product.nameBn}
+                <strong>
+                  {priceLabel(product.today)} / {unitLabel(product.unit)}
+                </strong>
+                <span className={product.change.dir}>
+                  {getChangeLabel(product.change)}
+                </span>
                 <span className="sr-only">{bnNumber(product.today)}</span>
               </span>
             ))}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
+import { AuthResultToast } from "@/components/auth-result-toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="bn">
       <body>
+        <AuthResultToast />
         {children}
         <Toaster position="top-center" toastOptions={{ duration: 3500 }} />
       </body>
